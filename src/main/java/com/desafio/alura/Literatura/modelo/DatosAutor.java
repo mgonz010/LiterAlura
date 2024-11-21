@@ -11,5 +11,4 @@ public record DatosAutor(
 
         @JsonAlias("birth_year") String fechaDeNacimiento
 ) {
-
 }

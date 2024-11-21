@@ -1,21 +1,30 @@
 package com.desafio.alura.Literatura.principal;
 
+import com.desafio.alura.Literatura.Repositorio.LibrosRepository;
 import com.desafio.alura.Literatura.modelo.Datos;
 import com.desafio.alura.Literatura.modelo.DatosLibros;
-import com.desafio.alura.Literatura.repository.AutorRepository;
+import com.desafio.alura.Literatura.modelo.Libros;
 import com.desafio.alura.Literatura.service.ConsumoAPI;
 import com.desafio.alura.Literatura.service.ConvierteDatos;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Scanner;
 
+@Component
 public class Principal {
-
-    private ConsumoAPI consumoAPI = new ConsumoAPI();
+    private final LibrosRepository repositorio;
     private Scanner teclado = new Scanner(System.in);
-    private ConvierteDatos conversor = new ConvierteDatos();
+    private ConsumoAPI consumoAPI = new ConsumoAPI();
     private final String URL_BASE = "https://gutendex.com/books/";
+    private ConvierteDatos conversor = new ConvierteDatos();
+
+    @Autowired
+    public Principal(LibrosRepository repositorio) {
+        this.repositorio = repositorio;
+    }
 
 
     public void muestraMenu() {
@@ -27,10 +36,10 @@ public class Principal {
                     =================================================
                     ===========   L I T E R A L U R A  ==============
                     =================================================
-                    
+                    =================================================
                     ===== REGISTRO DE LIBROS EN LA BASE DE DATOS ====
                     ==  1 - Buscar Libro por titulo - Api GutenDex ==
-                    
+                    =================================================
                     =================================================
                     ===== CONSULTA DE LIBROS EN LA BASE DE DATOS ====
                     ==  2 - Listar Libros registrados.             ==
@@ -47,10 +56,10 @@ public class Principal {
 
             switch (opcion) {
                 case 1:
-                    buscarLibroWeb();
+                    buscaLibros();
                     break;
                 case 2:
-                    listaLibrosRegistrados();
+                    buscaLibros();
                     break;
                 case 3:
                     break;
@@ -67,26 +76,9 @@ public class Principal {
         }
     }
 
-    //Top 10 libros mas Descargados
-
-    private void buscarLibroWeb() {
-        var json = consumoAPI.obtenerDatos(URL_BASE);
-        //System.out.println(json);
-        var datos = conversor.obtenerDatos(json, Datos.class);
-        //System.out.println(datos);
-
-        //Top 10 libros mas Descargados
-        System.out.println("Top 10 libros mas Descargados");
-        datos.resultados().stream()
-                .sorted(Comparator.comparing(DatosLibros::numeroDeDescarga).reversed())
-                .limit(10)
-                .map(l -> l.titulo().toUpperCase())
-                .forEach(System.out::println);
-
-    }
 
     //Busqueda de libros por nombre
-    private void listaLibrosRegistrados() {
+    private Optional<DatosLibros> getDatosLibros() {
         System.out.println("Ingrese el nombre del Libro que desea BUSCAR");
         var tituloLibro = teclado.nextLine();
         var json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
@@ -100,6 +92,17 @@ public class Principal {
             System.out.println(libroBuscado.get());
         } else {
             System.out.println("Libro NO Encontrado");
+        }
+
+        return libroBuscado;
+    }
+
+    private void buscaLibros() {
+        Optional<DatosLibros> datos = getDatosLibros();
+        if (datos.isPresent()) {
+            Libros libro = new Libros(datos);
+            repositorio.save(libro);
+            System.out.println("Libro guardado exitosamente: " + libro.getTitulo());
         }
     }
 
