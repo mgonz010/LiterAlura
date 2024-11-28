@@ -1,19 +1,21 @@
-package com.desafio.alura.Literatura;
+package com.desafio.alura.Literalura;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.desafio.alura.Literatura.Repositorio.LibrosRepository;
-import com.desafio.alura.Literatura.principal.Principal;
+import com.desafio.alura.Literalura.Repository.AutorRepository;
+import com.desafio.alura.Literalura.Repository.LibroRepository;
+import com.desafio.alura.Literalura.principal.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 @SpringBootApplication
 public class LiteraturaApplication implements CommandLineRunner {
+
 	@Autowired
-	private LibrosRepository repositorio;
+	private LibroRepository libroRepositorio;
+	@Autowired
+	private AutorRepository autorRepositorio;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LiteraturaApplication.class, args);
@@ -21,7 +23,9 @@ public class LiteraturaApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Principal principal = new Principal(repositorio);
-		principal.muestraMenu();
+
+		Principal client = new Principal(libroRepositorio, autorRepositorio);
+		client.menu();
 	}
+
 }

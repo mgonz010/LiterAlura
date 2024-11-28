@@ -1,14 +1,14 @@
-package com.desafio.alura.Literatura.modelo;
+package com.desafio.alura.Literalura.modelo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-
 public record DatosAutor(
-
-        @JsonAlias("name") String nombre,
-
-        @JsonAlias("birth_year") String fechaDeNacimiento
+        @JsonAlias("name") String name,
+        @JsonAlias("birth_year") Integer birthYear,
+        @JsonAlias("death_year") Integer deathYear
 ) {
+
 }
+

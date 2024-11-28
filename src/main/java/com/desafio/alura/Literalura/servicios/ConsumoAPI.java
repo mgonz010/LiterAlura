@@ -1,4 +1,4 @@
-package com.desafio.alura.Literatura.service;
+package com.desafio.alura.Literalura.servicios;
 
 import java.io.IOException;
 import java.net.URI;
